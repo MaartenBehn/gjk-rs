@@ -1,10 +1,10 @@
-use glam::{Vec3, Vec4, Vec4Swizzles};
+use glam::{DVec3, DVec4, Vec4Swizzles};
 
 use super::{Collider, ColliderType};
 
 
 impl Collider {
-    pub fn get_support_point(&self, dir: Vec3) -> Vec3 {
+    pub fn get_support_point(&self, dir: DVec3) -> DVec3 {
         match self.typ {
             x if x == ColliderType::Sphere as usize => {
                 dir.normalize() * self.radius + self.center
@@ -20,7 +20,7 @@ impl Collider {
                 (Copyright (c) 2003-2009 Erwin Coumans, zlib license)
                 */
     
-                let local_dir = self.collider2origen.inverse() * Vec4::from((dir, 0.0));
+                let local_dir = self.collider2origin.inverse() * DVec4::from((dir, 0.0));
     
                 let mut local_vertex = local_dir.normalize() * self.radius;
     
@@ -30,7 +30,7 @@ impl Collider {
                     -0.5 * self.height
                 };
     
-                (self.collider2origen * local_vertex).xyz() + self.center
+                (self.collider2origin * local_vertex).xyz() + self.center
             },
     
             x if x == ColliderType::Cylinder as usize => {
@@ -43,7 +43,7 @@ impl Collider {
                 (Copyright (c) 2003-2009 Erwin Coumans, zlib license) 
                 */
     
-                let local_dir = self.collider2origen.inverse() * Vec4::from((dir, 0.0));
+                let local_dir = self.collider2origin.inverse() * DVec4::from((dir, 0.0));
     
                 let mut local_vertex = local_dir.normalize() * self.radius;
     
@@ -55,18 +55,18 @@ impl Collider {
                     -0.5 * self.height
                 };
     
-                (self.collider2origen * local_vertex).xyz() + self.center
+                (self.collider2origin * local_vertex).xyz() + self.center
             },    
             _ => todo!() 
         }
     }
     
-    pub fn get_support_point_table(&self, dir: Vec3) -> Vec3 {
+    pub fn get_support_point_table(&self, dir: DVec3) -> DVec3 {
 
-        const PERFORM_Z_OFFSET_TABLE: [f32; 3] = [0., 1., 1.];
-        const ADD_TO_Z_TABLE: [f32; 3] = [1., 1., 0.];
+        const PERFORM_Z_OFFSET_TABLE: [f64; 3] = [0., 1., 1.];
+        const ADD_TO_Z_TABLE: [f64; 3] = [1., 1., 0.];
 
-        let local_dir = self.collider2origen.inverse() * Vec4::from((dir, 0.0));
+        let local_dir = self.collider2origin.inverse() * DVec4::from((dir, 0.0));
     
         let mut local_vertex = local_dir.normalize() * self.radius;
         
@@ -78,6 +78,6 @@ impl Collider {
     
         local_vertex.z = local_vertex.z * ADD_TO_Z_TABLE[self.typ] + z_offset * PERFORM_Z_OFFSET_TABLE[self.typ];
     
-        (self.collider2origen * local_vertex).xyz() + self.center
+        (self.collider2origin * local_vertex).xyz() + self.center
     }
 }

@@ -1,11 +1,11 @@
-use glam::{vec3, Vec3, Mat4};
+use glam::{dvec3, DVec3, DMat4};
 use rand::{Rng, distributions::uniform::SampleRange};
 
 use super::Collider;
 
 
 impl Collider {
-    pub fn new_random<R: SampleRange<f32> + Clone>(rng: &mut impl Rng, size_range: R) -> Self {
+    pub fn new_random<R: SampleRange<f64> + Clone>(rng: &mut impl Rng, size_range: R) -> Self {
         match rng.gen_range(0..=2) {
             // rand 0.8
             0 => Self::new_random_sphere(rng, size_range.to_owned(), size_range.to_owned()),
@@ -15,7 +15,7 @@ impl Collider {
         }
     }
 
-    pub fn new_random_sphere<R: SampleRange<f32> + Clone>(
+    pub fn new_random_sphere<R: SampleRange<f64> + Clone>(
         rng: &mut impl Rng, 
         center_rang: R,
         radius_range: R) -> Self
@@ -25,7 +25,7 @@ impl Collider {
             rng.gen_range(radius_range))
     }
 
-    pub fn new_random_capsule<R: SampleRange<f32> + Clone>(
+    pub fn new_random_capsule<R: SampleRange<f64> + Clone>(
         rng: &mut impl Rng, 
         center_rang: R,
         radius_range: R,
@@ -37,7 +37,7 @@ impl Collider {
             rng.gen_range(height_range))
     }
 
-    pub fn new_random_cylinder<R: SampleRange<f32> + Clone>(
+    pub fn new_random_cylinder<R: SampleRange<f64> + Clone>(
         rng: &mut impl Rng, 
         center_rang: R,
         radius_range: R,
@@ -50,13 +50,13 @@ impl Collider {
     }
 }
 
-fn random_vec3<R: SampleRange<f32> + Clone>(rng: &mut impl Rng, range: R) -> Vec3 {
-    vec3(
+fn random_vec3<R: SampleRange<f64> + Clone>(rng: &mut impl Rng, range: R) -> DVec3 {
+    dvec3(
         rng.gen_range(range.to_owned()), 
         rng.gen_range(range.to_owned()), 
         rng.gen_range(range.to_owned()))
 }
 
-fn random_mat4<R: SampleRange<f32> + Clone>(rng: &mut impl Rng, range: R) -> Mat4 {
-    Mat4::from_translation(random_vec3(rng, range))
+fn random_mat4<R: SampleRange<f64> + Clone>(rng: &mut impl Rng, range: R) -> DMat4 {
+    DMat4::from_translation(random_vec3(rng, range))
 }
