@@ -37,7 +37,7 @@ impl Collider {
             typ: ColliderType::Capluse as usize, 
             collider2origin, 
             
-            center: dvec3(collider2origin.x_axis.w, collider2origin.y_axis.w, collider2origin.z_axis.w), 
+            center: Self::get_center_from_collider2origin(&collider2origin), 
             radius: radius, 
             height: height,
         }
@@ -48,10 +48,14 @@ impl Collider {
             typ: ColliderType::Cylinder as usize, 
             collider2origin, 
             
-            center: dvec3(collider2origin.x_axis.w, collider2origin.y_axis.w, collider2origin.z_axis.w), 
+            center: Self::get_center_from_collider2origin(&collider2origin), 
             radius: radius, 
             height: height,
         }
+    }
+
+    fn get_center_from_collider2origin(collider2origin: &DMat4 ) -> DVec3 {
+        dvec3(collider2origin.x_axis.w, collider2origin.y_axis.w, collider2origin.z_axis.w)
     }
 
 }

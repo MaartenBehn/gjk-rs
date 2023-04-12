@@ -16,7 +16,7 @@ pub fn run_test_file(path: &str) {
         let collider1 = parse_collider(&json_obj["collider1"]);
         let collider2 = parse_collider(&json_obj["collider2"]);
 
-        let distance = json_obj["distance"].as_f32().unwrap();
+        let distance = json_obj["distance"].as_f64().unwrap();
 
         let mut gjk = GJKNesterov::new(None, 1e-6);
         let (collide, test_distance) = gjk.intersect_nesterov_accelerated(collider1, collider2, 100);
