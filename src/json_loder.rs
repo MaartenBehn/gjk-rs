@@ -1,35 +1,30 @@
 use std::fs;
 
 use glam::{dvec3, DMat4, dmat4, dvec4, DVec3, DVec4};
-use json::JsonValue;
+use serde_json::Value;
 
 use crate::{colliders::Collider, gjk::GJKNesterov};
 
-pub fn run_test_file(path: &str) {
+pub fn load_test_file(path: &str) -> Vec<(Collider, Collider, f64)> {
     let contents = fs::read_to_string(path).unwrap();
-    let json_data = json::parse(&contents).unwrap();
+    let json_data: Value = serde_json::from_str(&contents).unwrap();
 
-    let mut i = 0;
-    for json_obj in json_data.members(){
-        println!("Interation: {:?}", i);
+    let mut result: Vec<(Collider, Collider, f64)> = Vec::new();
+
+    for json_obj in json_data.as_array().unwrap() {
 
         let collider1 = parse_collider(&json_obj["collider1"]);
         let collider2 = parse_collider(&json_obj["collider2"]);
-
         let distance = json_obj["distance"].as_f64().unwrap();
 
-        let mut gjk = GJKNesterov::new(None, 1e-6);
-        let (collide, test_distance) = gjk.intersect_nesterov_accelerated(collider1, collider2, 100);
-
-        assert!(collide == (distance == 0.0));
-        //assert!(test_distance == distance);
-
-        i += 1;
+        result.push((collider1, collider2, distance))
     }
+
+    result
 }
 
-pub fn parse_collider(json_obj: &JsonValue) -> Collider {
-    match json_obj["type"].as_str().unwrap() {
+pub fn parse_collider(json_obj: &Value) -> Collider {
+    match json_obj["typ"].as_str().unwrap() {
         "Sphere" => {
             let center = parse_vec3(&json_obj["center"]);
 
@@ -57,7 +52,7 @@ pub fn parse_collider(json_obj: &JsonValue) -> Collider {
     }
 }
 
-fn parse_vec3(json_obj: &JsonValue) -> DVec3 {
+fn parse_vec3(json_obj: &Value) -> DVec3 {
     dvec3(
         json_obj[0].as_f64().unwrap(),
         json_obj[1].as_f64().unwrap(),
@@ -65,7 +60,7 @@ fn parse_vec3(json_obj: &JsonValue) -> DVec3 {
     )
 }
 
-fn parse_vec4(json_obj: &JsonValue) -> DVec4 {
+fn parse_vec4(json_obj: &Value) -> DVec4 {
     dvec4(
         json_obj[0].as_f64().unwrap(),
         json_obj[1].as_f64().unwrap(),
@@ -74,33 +69,41 @@ fn parse_vec4(json_obj: &JsonValue) -> DVec4 {
     )
 }
 
-fn parse_mat4(json_obj: &JsonValue) -> DMat4 {
+fn parse_mat4(json_obj: &Value) -> DMat4 {
     dmat4(
         parse_vec4(&json_obj[0]),
         parse_vec4(&json_obj[1]),
         parse_vec4(&json_obj[2]),
         parse_vec4(&json_obj[3]),
-    )
+    ).transpose()
 }
 
 #[cfg(test)]
 mod test{
     use glam::dvec3;
+    use serde_json::Value;
 
-    use crate::{colliders::ColliderType, json_loder::parse_collider};
-
-    use super::run_test_file;
+    use crate::{colliders::ColliderType, json_loder::{parse_collider, load_test_file}, gjk::GJKNesterov};
 
     #[test]
     fn test_run_test_file() {
 
         let path = "../data/test_data.json";
-        run_test_file(path);
+        let test_data = load_test_file(path);
+
+        for data in test_data {
+            let mut gjk = GJKNesterov::new(None, 1e-6);
+
+            let (_, test_distance) = gjk.intersect_nesterov_accelerated(&data.0, &data.1, 100);
+
+            assert!((test_distance - data.2).abs() < 0.01);
+        }
     }
 
     #[test]
     fn test_parse_json_collider() {
-        let json_obj = json::parse(r#"
+        
+        let json_obj: Value = serde_json::from_str(r#"
         {
             "type": "Sphere",
             "center": [
@@ -117,7 +120,7 @@ mod test{
         assert!(collider.radius == 10.0);
 
 
-        let json_obj = json::parse(r#"
+        let json_obj: Value = serde_json::from_str(r#"
         {
             "type": "Capsule",
             "center": [
@@ -136,7 +139,7 @@ mod test{
         assert!(collider.height == 2.0);
 
 
-        let json_obj = json::parse(r#"
+        let json_obj: Value = serde_json::from_str(r#"
         {
             "type": "Cylinder",
             "center": [

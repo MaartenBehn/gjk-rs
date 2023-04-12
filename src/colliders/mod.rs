@@ -55,7 +55,7 @@ impl Collider {
     }
 
     fn get_center_from_collider2origin(collider2origin: &DMat4 ) -> DVec3 {
-        dvec3(collider2origin.x_axis.w, collider2origin.y_axis.w, collider2origin.z_axis.w)
+        collider2origin.w_axis.xyz()
     }
 
 }

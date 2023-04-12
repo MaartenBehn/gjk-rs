@@ -1,4 +1,4 @@
-use glam::{DVec3, DVec4, Vec4Swizzles};
+use glam::{DVec3, DVec4, Vec4Swizzles, DMat3, dvec3};
 
 use super::{Collider, ColliderType};
 
@@ -19,18 +19,24 @@ impl Collider {
                 * https://github.com/bulletphysics/bullet3/blob/e306b274f1885f32b7e9d65062aa942b398805c2/src/BulletCollision/CollisionShapes/btConvexShape.cpp#L228
                 (Copyright (c) 2003-2009 Erwin Coumans, zlib license)
                 */
+                let transform_mat = DMat3::from_mat4(self.collider2origin);
+                let local_dir = transform_mat.transpose() * dir;
+
+                let s = (local_dir.x * local_dir.x + local_dir.y * local_dir.y + local_dir.z * local_dir.z).sqrt();
     
-                let local_dir = self.collider2origin.inverse() * DVec4::from((dir, 0.0));
-    
-                let mut local_vertex = local_dir.normalize() * self.radius;
-    
-                local_vertex.z += if local_vertex.z > 0.0 {
-                    0.5 * self.height
-                } else {
-                    -0.5 * self.height
+                let mut local_vertex = if s == 0.0 { 
+                    dvec3(self.radius, 0.0, 0.0) 
+                } else {  
+                    local_dir * (self.radius / s)
                 };
-    
-                (self.collider2origin * local_vertex).xyz() + self.center
+
+                local_vertex.z += if local_vertex.z > 0.0 { 
+                    0.5 * self.height 
+                } else { 
+                    -0.5 * self.height 
+                };
+
+                self.center + (transform_mat * local_vertex)
             },
     
             x if x == ColliderType::Cylinder as usize => {
@@ -42,42 +48,23 @@ impl Collider {
                 * https://github.com/bulletphysics/bullet3/blob/e306b274f1885f32b7e9d65062aa942b398805c2/src/BulletCollision/CollisionShapes/btConvexShape.cpp#L167
                 (Copyright (c) 2003-2009 Erwin Coumans, zlib license) 
                 */
-    
-                let local_dir = self.collider2origin.inverse() * DVec4::from((dir, 0.0));
-    
-                let mut local_vertex = local_dir.normalize() * self.radius;
-    
-                local_vertex.z = 0.0;
-    
-                local_vertex.z += if local_vertex.z > 0.0 {
-                    0.5 * self.height
-                } else {
-                    -0.5 * self.height
+                let transform_mat = DMat3::from_mat4(self.collider2origin);
+                let local_dir = transform_mat.transpose() * dir;
+
+                let s = (local_dir.x * local_dir.x + local_dir.y * local_dir.y).sqrt();
+
+                let z = if local_dir.z < 0.0 { -0.5 * self.height } else { 0.5 * self.height };
+                
+                let local_vertex = if s == 0.0 { 
+                    dvec3(self.radius, 0.0, z) 
+                } else {  
+                    let d = self.radius / s;
+                    dvec3(local_dir.x * d, local_dir.y * d, z) 
                 };
-    
-                (self.collider2origin * local_vertex).xyz() + self.center
+
+                self.center + (transform_mat * local_vertex)
             },    
             _ => todo!() 
         }
-    }
-    
-    pub fn get_support_point_table(&self, dir: DVec3) -> DVec3 {
-
-        const PERFORM_Z_OFFSET_TABLE: [f64; 3] = [0., 1., 1.];
-        const ADD_TO_Z_TABLE: [f64; 3] = [1., 1., 0.];
-
-        let local_dir = self.collider2origin.inverse() * DVec4::from((dir, 0.0));
-    
-        let mut local_vertex = local_dir.normalize() * self.radius;
-        
-        let z_offset = if local_vertex.z > 0.0 {
-            0.5 * self.height
-        } else {
-            -0.5 * self.height
-        };
-    
-        local_vertex.z = local_vertex.z * ADD_TO_Z_TABLE[self.typ] + z_offset * PERFORM_Z_OFFSET_TABLE[self.typ];
-    
-        (self.collider2origin * local_vertex).xyz() + self.center
     }
 }

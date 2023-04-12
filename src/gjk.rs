@@ -57,7 +57,7 @@ impl GJKNesterov
         }
     }
 
-    pub fn intersect_nesterov_accelerated(&mut self, collider1: Collider, collider2: Collider, max_iterations: usize) -> (bool, f64){
+    pub fn intersect_nesterov_accelerated(&mut self, collider1: &Collider, collider2: &Collider, max_iterations: usize) -> (bool, f64){
         let upper_bound = 1000000000.0;
     
         let mut use_nesterov_acceleration = true;
@@ -67,8 +67,10 @@ impl GJKNesterov
     
         let mut inside = false;
         let mut distance = 0.0;
+        let mut interation = 0;
     
         for i in 0..max_iterations {
+            interation = i;
             let k = i as f64;
     
             if self.ray_len < self.tolerance {
@@ -148,8 +150,8 @@ impl GJKNesterov
                 break;
             }
         }
-    
-        println!("Distance: {:?}", distance);
+
+        // println!("{:?}", interation);
     
         return (inside, distance);
     }
@@ -177,7 +179,7 @@ impl GJKNesterov
         ab: DVec3,
         ab_dot_a0: f64,
     ) {
-        self.ray = (a * ab.dot(b) + b * ab_dot_a0) / ab.length_squared();
+        self.ray = (ab.dot(b) * a + ab_dot_a0 * b) / ab.length_squared();
         self.simplex[0] = self.simplex[b_index];
         self.simplex[1] = self.simplex[a_index];
         self.simplex_len = 2;
@@ -212,7 +214,7 @@ impl GJKNesterov
         self.simplex[2] = self.simplex[a_index];
         self.simplex_len = 3;
     
-        self.ray = abc * -abc_dot_a0 / abc.length_squared();
+        self.ray = -abc_dot_a0 / abc.length_squared() * abc;
         if abc == DVec3::ZERO {
             self.ray = abc;
         }
@@ -276,7 +278,7 @@ impl GJKNesterov
         if edge_ac2o >= 0.0 {
             let towards_c = ac.dot(-a);
             if towards_c >= 0.0 {
-                self.origen_to_segment(a_index, b_index, a, b, ab, towards_c)
+                self.origen_to_segment(a_index, c_index, a, c, ac, towards_c)
             } else {
                 t_b(self);
             }
