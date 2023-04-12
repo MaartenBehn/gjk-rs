@@ -3,5 +3,6 @@
 
 ## Profile
 ```bash
-perf record --call-graph dwarf 
+perf record --call-graph dwarf target
+hotspot ./perf.data
 ```

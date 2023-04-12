@@ -18,5 +18,9 @@ rand = "0.8"
 criterion = { version = "0.4", features = ["html_reports"]}
 
 [[bench]]
-name = "bench_test_file"
+name = "gjk"
 harness = false
+
+
+[profile.release]
+debug = 1
