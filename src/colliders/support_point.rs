@@ -19,8 +19,7 @@ impl Collider {
                 * https://github.com/bulletphysics/bullet3/blob/e306b274f1885f32b7e9d65062aa942b398805c2/src/BulletCollision/CollisionShapes/btConvexShape.cpp#L228
                 (Copyright (c) 2003-2009 Erwin Coumans, zlib license)
                 */
-                let transform_mat = DMat3::from_mat4(self.collider2origin);
-                let local_dir = transform_mat.transpose() * dir;
+                let local_dir = self.transform_transposed * dir;
 
                 let s = (local_dir.x * local_dir.x + local_dir.y * local_dir.y + local_dir.z * local_dir.z).sqrt();
     
@@ -36,7 +35,7 @@ impl Collider {
                     -0.5 * self.height 
                 };
 
-                self.center + (transform_mat * local_vertex)
+                self.center + (self.transform * local_vertex)
             },
     
             x if x == ColliderType::Cylinder as usize => {
@@ -48,8 +47,7 @@ impl Collider {
                 * https://github.com/bulletphysics/bullet3/blob/e306b274f1885f32b7e9d65062aa942b398805c2/src/BulletCollision/CollisionShapes/btConvexShape.cpp#L167
                 (Copyright (c) 2003-2009 Erwin Coumans, zlib license) 
                 */
-                let transform_mat = DMat3::from_mat4(self.collider2origin);
-                let local_dir = transform_mat.transpose() * dir;
+                let local_dir =  self.transform_transposed * dir;
 
                 let s = (local_dir.x * local_dir.x + local_dir.y * local_dir.y).sqrt();
 
@@ -62,7 +60,7 @@ impl Collider {
                     dvec3(local_dir.x * d, local_dir.y * d, z) 
                 };
 
-                self.center + (transform_mat * local_vertex)
+                self.center + (self.transform * local_vertex)
             },    
             _ => todo!() 
         }

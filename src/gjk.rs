@@ -57,7 +57,7 @@ impl GJKNesterov
         }
     }
 
-    pub fn intersect_nesterov_accelerated(&mut self, collider1: &Collider, collider2: &Collider, max_iterations: usize) -> (bool, f64){
+    pub fn intersect_nesterov_accelerated(&mut self, collider1: &Collider, collider2: &Collider, max_iterations: usize) -> (bool, f64, usize){
         let upper_bound = 1000000000.0;
     
         let mut use_nesterov_acceleration = true;
@@ -150,10 +150,8 @@ impl GJKNesterov
                 break;
             }
         }
-
-        // println!("{:?}", interation);
     
-        return (inside, distance);
+        return (inside, distance, interation);
     }
     
     fn check_convergence(&mut self) -> bool {

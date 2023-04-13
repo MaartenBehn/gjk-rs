@@ -15,6 +15,11 @@ fn criterion_benchmark(c: &mut Criterion) {
 
     for (i, data) in test_data.iter().enumerate() {
         group.bench_with_input(BenchmarkId::from_parameter(i), data, |b, data| b.iter(|| test_gjk(&data.0, &data.1)));
+        
+        if i == 10 {
+            break;
+        }
+    
     }
     group.finish();
 }
