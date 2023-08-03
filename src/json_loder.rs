@@ -24,13 +24,13 @@ pub fn load_test_file(path: &str) -> Vec<(Collider, Collider, f64)> {
 }
 
 pub fn parse_collider(json_obj: &Value) -> Collider {
-    match json_obj["typ"].as_str().unwrap() {
+    match json_obj["type"].as_str().unwrap() {
         "Sphere" => {
-            let center = parse_vec3(&json_obj["center"]);
+            let collider2origin = parse_mat4(&json_obj["collider2origin"]);
 
             let radius = json_obj["radius"].as_f64().unwrap();
 
-            Collider::new_sphere(center, radius)
+            Collider::new_sphere(collider2origin, radius)
         }
         "Capsule" => {
             let collider2origin = parse_mat4(&json_obj["collider2origin"]);
@@ -47,6 +47,13 @@ pub fn parse_collider(json_obj: &Value) -> Collider {
             let height = json_obj["height"].as_f64().unwrap();
 
             Collider::new_cylinder(collider2origin, radius, height)
+        }
+        "Box" => {
+            let collider2origin = parse_mat4(&json_obj["collider2origin"]);
+
+            let size = parse_vec3(&json_obj["size"]);
+            
+            Collider::new_box(collider2origin, size)
         }
         &_ => todo!()
     }

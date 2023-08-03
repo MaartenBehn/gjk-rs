@@ -62,6 +62,31 @@ impl Collider {
 
                 self.center + (self.transform * local_vertex)
             },    
+            x if x == ColliderType::Box as usize => {
+                /*
+                You can find similar implementations here:
+    
+                * https://github.com/kevinmoran/GJK/blob/b38d923d268629f30b44c3cf6d4f9974bbcdb0d3/Collider.h#L42
+                (Copyright (c) 2017 Kevin Moran, MIT License or Unlicense)
+                * https://github.com/bulletphysics/bullet3/blob/e306b274f1885f32b7e9d65062aa942b398805c2/src/BulletCollision/CollisionShapes/btConvexShape.cpp#L167
+                (Copyright (c) 2003-2009 Erwin Coumans, zlib license) 
+                */
+                
+                let local_dir = self.transform_transposed * dir;
+
+                let mut local_vertex = self.size * 0.5;
+                if local_dir.x < 0.0 {
+                    local_vertex.x *= -1.0;
+                }
+                if local_dir.y < 0.0 {
+                    local_vertex.y *= -1.0;
+                }
+                if local_dir.z < 0.0 {
+                    local_vertex.z *= -1.0;
+                }
+
+                self.center + (self.transform * local_vertex)
+            },    
             _ => todo!() 
         }
     }

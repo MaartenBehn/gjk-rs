@@ -21,7 +21,7 @@ impl Collider {
         radius_range: R) -> Self
     {
         Self::new_sphere(
-            random_vec3(rng, center_rang), 
+            random_mat4(rng, center_rang),
             rng.gen_range(radius_range))
     }
 
