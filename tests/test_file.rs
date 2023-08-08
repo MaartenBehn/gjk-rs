@@ -13,7 +13,7 @@ fn test_run_test_file() {
 
         let mut gjk = GJKNesterov::new(None, 1e-6);
 
-        let (_, test_distance, iterations) = gjk.intersect_nesterov_accelerated(&data.0, &data.1, 100);
+        let (_, test_distance, iterations) = gjk.distance_nesterov_accelerated(&data.0, &data.1, 100);
 
         assert!((test_distance - data.2).abs() < 0.01);
 

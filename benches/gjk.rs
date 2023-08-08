@@ -3,20 +3,21 @@ use gjk::{colliders::Collider, gjk::GJKNesterov, json_loder::load_test_file};
 
 fn test_gjk(collider1: &Collider, collider2: &Collider) {
     let mut gjk = GJKNesterov::new(None, 1e-6);
-    gjk.intersect_nesterov_accelerated(collider1, collider2, 100);
+    gjk.distance_nesterov_accelerated(collider1, collider2, 100);
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
 
-    let path = "../data/test_data.json";
+    let path = "../data/nao_test_cases.json";
     let test_data = load_test_file(path);
 
-    let mut group = c.benchmark_group("test_gjk");
+    c.bench_function("gjk", |b| b.iter(|| 
+        for (i, data) in test_data.iter().enumerate() {
+            test_gjk(&data.0, &data.1);
+        }
+    ));
 
-    for (i, data) in test_data.iter().enumerate() {
-        group.bench_with_input(BenchmarkId::from_parameter(i), data, |b, data| b.iter(|| test_gjk(&data.0, &data.1)));
-    }
-    group.finish();
+    print!("Cases: {:?}", test_data.len());
 }
 
 criterion_group!(benches, criterion_benchmark);

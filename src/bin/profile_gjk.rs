@@ -7,7 +7,7 @@ fn main() {
 
     for data in test_data {
         let mut gjk = GJKNesterov::new(None, 1e-6);
-        gjk.intersect_nesterov_accelerated(&data.0, &data.1, 100);
+        gjk.distance_nesterov_accelerated(&data.0, &data.1, 100);
     }
 }
 
