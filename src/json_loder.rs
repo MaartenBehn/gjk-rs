@@ -107,7 +107,7 @@ mod test{
         }"#).unwrap();
 
         let collider = parse_collider(&json_obj);
-        assert!(collider.typ == (ColliderType::Sphere as usize));
+        assert!(collider.typ == ColliderType::Sphere);
         assert!(collider.center == dvec3(1.0, 0.0, 0.0));
         assert!(collider.radius == 10.0);
 
@@ -125,7 +125,7 @@ mod test{
         }"#).unwrap();
 
         let collider = parse_collider(&json_obj);
-        assert!(collider.typ == (ColliderType::Capluse as usize));
+        assert!(collider.typ == ColliderType::Capluse);
         // assert!(collider.center == vec3(0.0, 1.0, 2.0)); TODO
         assert!(collider.radius == 1.0);
         assert!(collider.height == 2.0);
@@ -144,7 +144,7 @@ mod test{
         }"#).unwrap();
 
         let collider = parse_collider(&json_obj);
-        assert!(collider.typ == (ColliderType::Cylinder as usize));
+        assert!(collider.typ == ColliderType::Cylinder);
         // assert!(collider.center == vec3(5.0, 1.0, 0.0)); TODO
         assert!(collider.radius == 10.0);
         assert!(collider.height == 3.0);

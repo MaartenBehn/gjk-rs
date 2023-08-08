@@ -3,6 +3,7 @@ use glam::{DVec3, DMat4, Vec4Swizzles, dvec3, DMat3};
 pub mod random;
 pub mod support_point;
 
+#[derive(PartialEq, Clone, Copy)]
 pub enum ColliderType {
     Sphere,
     Capluse,
@@ -11,7 +12,7 @@ pub enum ColliderType {
 }
 
 pub struct Collider {
-    pub typ: usize,
+    pub typ: ColliderType,
 
     pub transform: DMat3,
     pub transform_transposed: DMat3,
@@ -28,7 +29,7 @@ impl Collider {
         let transform = DMat3::from_mat4(collider2origin);
 
         Self { 
-            typ: ColliderType::Sphere as usize, 
+            typ: ColliderType::Sphere, 
             transform, 
             transform_transposed: transform.transpose(),
             center: Self::get_center_from_collider2origin(&collider2origin), 
@@ -42,7 +43,7 @@ impl Collider {
         let transform = DMat3::from_mat4(collider2origin);
 
         Self { 
-            typ: ColliderType::Capluse as usize, 
+            typ: ColliderType::Capluse, 
             transform, 
             transform_transposed: transform.transpose(),
             center: Self::get_center_from_collider2origin(&collider2origin), 
@@ -56,7 +57,7 @@ impl Collider {
         let transform = DMat3::from_mat4(collider2origin);
 
         Self { 
-            typ: ColliderType::Cylinder as usize, 
+            typ: ColliderType::Cylinder, 
             transform, 
             transform_transposed: transform.transpose(),
             center: Self::get_center_from_collider2origin(&collider2origin), 
@@ -70,7 +71,7 @@ impl Collider {
         let transform = DMat3::from_mat4(collider2origin);
 
         Self { 
-            typ: ColliderType::Box as usize, 
+            typ: ColliderType::Box, 
             transform, 
             transform_transposed: transform.transpose(),
             center: Self::get_center_from_collider2origin(&collider2origin), 

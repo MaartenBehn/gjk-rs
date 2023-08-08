@@ -12,13 +12,19 @@ name = "gjk"
 glam = "0.23"
 serde_json = { version = "1.0", features = ["arbitrary_precision"]}
 rand = "0.8"
-
+nalgebra = "0.32"
+# Choose the one you need, or both.
+ncollide3d = "0.33"
 
 [dev_dependencies]
 criterion = { version = "0.4", features = ["html_reports"]}
 
 [[bench]]
 name = "gjk"
+harness = false
+
+[[bench]]
+name = "ncollide"
 harness = false
 
 

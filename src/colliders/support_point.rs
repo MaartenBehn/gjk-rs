@@ -6,11 +6,11 @@ use super::{Collider, ColliderType};
 impl Collider {
     pub fn get_support_point(&self, dir: DVec3) -> DVec3 {
         match self.typ {
-            x if x == ColliderType::Sphere as usize => {
+            ColliderType::Sphere => {
                 dir.normalize() * self.radius + self.center
             },
     
-            x if x == ColliderType::Capluse as usize => {
+            ColliderType::Capluse => {
                 /*
                 You can find similar implementations here:
     
@@ -38,7 +38,7 @@ impl Collider {
                 self.center + (self.transform * local_vertex)
             },
     
-            x if x == ColliderType::Cylinder as usize => {
+            ColliderType::Cylinder => {
                 /*
                 You can find similar implementations here:
     
@@ -62,7 +62,7 @@ impl Collider {
 
                 self.center + (self.transform * local_vertex)
             },    
-            x if x == ColliderType::Box as usize => {
+            ColliderType::Box => {
                 /*
                 You can find similar implementations here:
     
