@@ -1,4 +1,4 @@
-use glam::{DVec3, DVec4, Vec4Swizzles, DMat3, dvec3};
+use glam::{DVec3, dvec3};
 
 use super::{Collider, ColliderType};
 
@@ -87,7 +87,6 @@ impl Collider {
 
                 self.center + (self.transform * local_vertex)
             },    
-            _ => todo!() 
         }
     }
 }

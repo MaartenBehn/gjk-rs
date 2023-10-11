@@ -1,4 +1,4 @@
-use glam::{DVec3, DMat4, Vec4Swizzles, dvec3, DMat3};
+use glam::{DVec3, DMat4, Vec4Swizzles, DMat3};
 
 pub mod random;
 pub mod support_point;

@@ -2,7 +2,7 @@ use glam::{DVec3, dvec3};
 
 use crate::colliders::Collider;
 
-
+#[allow(dead_code)]
 #[derive(Copy, Clone, Debug)]
 struct Vertex {
     v: DVec3,

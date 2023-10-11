@@ -3,7 +3,7 @@ use std::fs;
 use glam::{dvec3, DMat4, dmat4, dvec4, DVec3, DVec4};
 use serde_json::Value;
 
-use crate::{colliders::Collider, gjk::GJKNesterov};
+use crate::{colliders::Collider};
 
 pub fn load_test_file(path: &str) -> Vec<(Collider, Collider, f64)> {
     let contents = fs::read_to_string(path).unwrap();
